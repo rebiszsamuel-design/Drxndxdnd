@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRONX 0101</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: #030712;
+            color: #00ff66;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Scanline effect */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 999;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        header {
+            background: rgba(10, 25, 47, 0.85);
+            border-bottom: 2px solid #00f0ff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-name {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #00f0ff;
+            text-shadow: 0 0 10px #00f0ff, 0 0 20px #0055ff;
+            letter-spacing: 4px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border: 2px solid #00ff66;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #00ff66;
+        }
+
+        nav {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: #0a192f;
+            color: #00ff66;
+            border: 1px solid #00f0ff;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: #00f0ff;
+            color: #0a192f;
+            box-shadow: 0 0 15px #00f0ff;
+        }
+
+        main {
+            flex: 1;
+            padding: 40px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Home Tab */
+        #Home {
+            text-align: center;
+            padding-top: 60px;
+        }
+
+        .hero-title {
+            font-size: 2.8rem;
+            color: #ff0055;
+            text-shadow: 0 0 15px #ff0055, 0 0 30px #880000;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 900;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: #00f0ff;
+            text-shadow: 0 0 8px #00f0ff;
+            letter-spacing: 1px;
+        }
+
+        /* Leaks Tab */
+        .leaks-notice {
+            text-align: center;
+            background: rgba(255, 0, 85, 0.1);
+            border: 1px solid #ff0055;
+            color: #ff0055;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-shadow: 0 0 8px #ff0055;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.2);
+        }
+
+        .leaks-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .leak-btn {
+            background: linear-gradient(135deg, #0a192f, #0d2342);
+            color: #00ff66;
+            border: 1px solid #00ff66;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .leak-btn:hover:not(:disabled) {
+            background: #00ff66;
+            color: #030712;
+            box-shadow: 0 0 20px #00ff66;
+        }
+
+        .leak-btn:disabled {
+            border-color: #555;
+            color: #555;
+            background: #111;
+            cursor: not-allowed;
+            box-shadow: none;
+            opacity: 0.6;
+        }
+
+        /* Servers Tab */
+        .servers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .server-card {
+            background: rgba(10, 25, 47, 0.7);
+            border: 1px solid #00f0ff;
+            border-left: 5px solid #00f0ff;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
+        }
+
+        .server-title {
+            font-size: 1.4rem;
+            color: #ffffff;
+            margin-bottom: 5px;
+            text-shadow: 0 0 5px #ffffff;
+        }
+
+        .server-desc {
+            color: #a0aec0;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 3px;
+        }
+
+        .status-leaked {
+            background: rgba(255, 0, 85, 0.2);
+            color: #ff0055;
+            border: 1px solid #ff0055;
+            box-shadow: 0 0 8px rgba(255, 0, 85, 0.4);
+        }
+
+        .status-leaking {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+            border: 1px solid #ffaa00;
+            box-shadow: 0 0 8px rgba(255, 170, 0, 0.4);
+        }
+
+        .status-down {
+            background: rgba(150, 150, 150, 0.2);
+            color: #888888;
+            border: 1px solid #888888;
+        }
+
+        .planned-section {
+            margin-top: 40px;
+            background: rgba(3, 7, 18, 0.9);
+            border: 1px dashed #00ff66;
+            padding: 25px;
+            border-radius: 5px;
+        }
+
+        .planned-title {
+            font-size: 1.3rem;
+            color: #00ff66;
+            margin-bottom: 15px;
+            text-shadow: 0 0 8px #00ff66;
+            text-transform: uppercase;
+            border-bottom: 1px solid #00ff66;
+            padding-bottom: 8px;
+        }
+
+        .planned-list {
+            list-style-type: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .planned-list li {
+            color: #00f0ff;
+            background: rgba(0, 240, 255, 0.05);
+            padding: 8px 12px;
+            border-left: 2px solid #00f0ff;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.8rem;
+            color: #00f0ff;
+            opacity: 0.6;
+            border-top: 1px solid rgba(0, 240, 255, 0.2);
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <div class="brand-name">DRONX 0101</div>
+        </div>
+        <div class="header-right">
+            <nav>
+                <button class="nav-btn active" onclick="openTab(event, 'Home')">Home</button>
+                <button class="nav-btn" onclick="openTab(event, 'Leaks')">Leaks</button>
+                <button class="nav-btn" onclick="openTab(event, 'Servers')">Servers</button>
+            </nav>
+            <img src="Logo Dronx.png" alt="Logo Dronx" class="logo-img" title="Logo Dronx">
+        </div>
+    </header>
+
+    <main>
+        <!-- HOME TAB -->
+        <div id="Home" class="tab-content active">
+            <h1 class="hero-title">This is the end of Brick Rigs Servers</h1>
+            <p class="hero-subtitle">Join us today</p>
+        </div>
+
+        <!-- LEAKS TAB -->
+        <div id="Leaks" class="tab-content">
+            <div class="leaks-notice">
+                [!] Pobieranie leaków chwilowo wyłączone
+            </div>
+            <div class="leaks-container">
+                <button class="leak-btn">Henaria map 1 <span>[DOWNLOAD]</span></button>
+                <button class="leak-btn">Henaria map 2 <span>[DOWNLOAD]</span></button>
+                <button class="leak-btn">Fikcyjne Bielsko Map <span>[DOWNLOAD]</span></button>
+                <button class="leak-btn" disabled>Soplin Map <span>[DISABLED]</span></button>
+            </div>
+        </div>
+
+        <!-- SERVERS TAB -->
+        <div id="Servers" class="tab-content">
+            <div class="servers-list">
+                <div class="server-card">
+                    <h2 class="server-title">Fikcyjne Bielsko Role-Play</h2>
+                    <p class="server-desc">Serwer prowadzony przez hipokryte i narcyza. zła administracja</p>
+                    <span class="status-badge status-leaked">Leaked</span>
+                </div>
+
+                <div class="server-card">
+                    <h2 class="server-title">Knox County RP</h2>
+                    <p class="server-desc">Nowa wersja Fikcyjnego bielska, serwer hipokrytów</p>
+                    <span class="status-badge status-leaking">Leaking</span>
+                </div>
+
+                <div class="server-card">
+                    <h2 class="server-title">Henaria RP 1</h2>
+                    <p class="server-desc">Serwer człowieka bez kompetencji do jego prowadzenia, równiez hipokrytyczny i zjechany serwer</p>
+                    <span class="status-badge status-leaked">Leaked</span>
+                </div>
+
+                <div class="server-card">
+                    <h2 class="server-title">Korlandia RP</h2>
+                    <p class="server-desc">Serwer osoby która nienawidzi nowej i młodej spoleczności, hejter i narcyz</p>
+                    <span class="status-badge status-leaking">Leaking models</span>
+                </div>
+
+                <div class="server-card">
+                    <h2 class="server-title">Faxa RP</h2>
+                    <p class="server-desc">Serwer dla pieniędzy i sprowadzania rp na niższy poziom</p>
+                    <span class="status-badge status-down">Serwer upadły/zamknięty</span>
+                </div>
+            </div>
+
+            <div class="planned-section">
+                <h3 class="planned-title">W planach do leaku</h3>
+                <ul class="planned-list">
+                    <li>Projekt Region Pomorze RP</li>
+                    <li>Polska RP</li>
+                    <li>Polonija RP</li>
+                    <li>Henaria RP 2</li>
+                    <li>Knox County RP</li>
+                    <li>Typowa polska roleplay</li>
+                    <li>Region sanok</li>
+                    <li>Suwałki RP</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        &copy; DRONX 0101 // ALL RIGHTS RESERVED
+    </footer>
+
+    <script>
+        function openTab(evt, tabName) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+    </script>
+</body>
+</html>
